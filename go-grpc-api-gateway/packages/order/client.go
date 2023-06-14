@@ -6,7 +6,7 @@ import (
 	"github.com/nuea/go-grpc-api-gateway/packages/config"
 	pb "github.com/nuea/go-grpc-api-gateway/packages/order/proto"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type ServiceClient struct {
@@ -15,8 +15,7 @@ type ServiceClient struct {
 
 func InitServiceClient(c *config.Config) pb.OrderServiceClient {
 	// using WithInsecure() because no SSL running
-	cc, err := grpc.Dial(c.OrderSvcUrl, grpc.WithTransportCredentials(credentials.NewTLS(nil)))
-
+	cc, err := grpc.Dial(c.OrderSvcUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Println("Could not connect:", err)
 	}

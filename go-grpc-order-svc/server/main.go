@@ -5,14 +5,15 @@ import (
 	"log"
 	"net"
 
+	"github.com/nuea/go-grpc-order-svc/packages/client"
+	"github.com/nuea/go-grpc-order-svc/packages/services"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/nuea/go-grpc-product-svc/packages/services"
+	"github.com/nuea/go-grpc-order-svc/packages/database"
 
-	"github.com/nuea/go-grpc-product-svc/packages/config"
-	"github.com/nuea/go-grpc-product-svc/packages/database"
-	pb "github.com/nuea/go-grpc-product-svc/packages/proto"
+	"github.com/nuea/go-grpc-order-svc/packages/config"
+	pb "github.com/nuea/go-grpc-order-svc/packages/proto"
 )
 
 func main() {
@@ -25,18 +26,20 @@ func main() {
 
 	lis, err := net.Listen("tcp", c.Port)
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		log.Fatalln("Failed to listen: ", err)
 	}
-	fmt.Printf("Product Service Listening on %s\n", c.Port)
+	fmt.Printf("Order Service Listening on %s\n", c.Port)
+
+	productSvc := client.InitProductServiceClient(c.ProductSvcUrl)
 
 	s := &services.Service{
-		DB: db,
+		DB:         db,
+		ProductSvc: productSvc,
 	}
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterProductServiceServer(grpcServer, s)
-	// Register reflection service on gRPC server.
+	pb.RegisterOrderServiceServer(grpcServer, s)
 	reflection.Register(grpcServer)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve:", err)

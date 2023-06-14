@@ -3,8 +3,9 @@ package database
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
+
+	"github.com/nuea/go-grpc-auth-svc/packages/config"
 
 	"github.com/nuea/go-grpc-auth-svc/packages/models"
 
@@ -13,7 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-type DatabaseHandler struct {
+type Handler struct {
 	db       *gorm.DB
 	host     string
 	port     string
@@ -23,7 +24,7 @@ type DatabaseHandler struct {
 	timezone string
 }
 
-func (h *DatabaseHandler) Connect() error {
+func (h *Handler) Connect() error {
 	sqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=%s", h.host, h.port, h.user, h.password, h.dbName, h.timezone)
 	db, err := gorm.Open(postgres.Open(sqlInfo), &gorm.Config{
 		NowFunc: func() time.Time {
@@ -36,18 +37,22 @@ func (h *DatabaseHandler) Connect() error {
 	return err
 }
 
-func (g *DatabaseHandler) AutoMigrate() {
-	g.db.AutoMigrate(&models.User{})
+func (h *Handler) AutoMigrate() {
+	h.db.AutoMigrate(&models.User{})
 }
 
-func Connect() *DatabaseHandler {
-	gorm := &DatabaseHandler{
-		host:     os.Getenv("DB_HOST"),
-		port:     os.Getenv("DB_PORT"),
-		dbName:   os.Getenv("DB_NAME"),
-		user:     os.Getenv("DB_USER"),
-		password: os.Getenv("DB_PASSWORD"),
-		timezone: os.Getenv("DB_TZ"),
+func (h *Handler) GetDatabase() *gorm.DB {
+	return h.db
+}
+
+func Connect(config config.Config) Handler {
+	gorm := Handler{
+		host:     config.DBHost,
+		port:     config.DBPort,
+		dbName:   config.DBName,
+		user:     config.DBUser,
+		password: config.DBPassword,
+		timezone: config.DBTZ,
 	}
 
 	if err := gorm.Connect(); err != nil {

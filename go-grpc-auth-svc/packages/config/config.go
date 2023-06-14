@@ -3,9 +3,16 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	Port         string `mapstructure:"PORT"`
-	DBUrl        string `mapstructure:"DB_URL"`
-	JWTSecretKey string `mapstructure:"JWT_SECRET_KEY"`
+	Port                 string `mapstructure:"PORT"`
+	DBUrl                string `mapstructure:"DB_URL"`
+	DBHost               string `mapstructure:"DB_HOST"`
+	DBPort               string `mapstructure:"DB_PORT"`
+	DBName               string `mapstructure:"DB_NAME"`
+	DBUser               string `mapstructure:"DB_USER"`
+	DBPassword           string `mapstructure:"DB_PASSWORD"`
+	DBTZ                 string `mapstructure:"DB_TZ"`
+	JWTSecretKey         string `mapstructure:"AUTH_SECRET_KEY"`
+	AccessTokenMinuteTTL int64  `mapstructure:"AUTH_ACCESS_TOKEN_MINUTE_TTL"`
 }
 
 func LoadConfig() (config Config, err error) {

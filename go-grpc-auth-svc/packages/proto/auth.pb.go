@@ -27,7 +27,7 @@ type RegisterRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Email    string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"` // string confirmPassword = 3;
 }
 
 func (x *RegisterRequest) Reset() {
